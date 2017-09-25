@@ -62,7 +62,7 @@ class BaseSelection(object):
         if not self.view.size(): return False
         self.selection = self.view.substr(self.view.sel()[0])
         if not self.selection:
-            self.selection = self.view.substr(sublime.Region(0, 
+            self.selection = self.view.substr(sublime.Region(0,
                 self.view.size()))
 
         return True
@@ -119,7 +119,7 @@ class BuildCustomLabelsTranslationMetadata(sublime_plugin.TextCommand):
 class JsonFormat(BaseSelection, sublime_plugin.TextCommand):
     def run(self, edit):
         try:
-            formatted_json = json.dumps(json.loads(self.selection), 
+            formatted_json = json.dumps(json.loads(self.selection),
                 ensure_ascii=False, indent=4)
         except ValueError as ve:
             return Printer.get('error').write(str(ve))
@@ -150,7 +150,7 @@ class JsonToApex(BaseSelection, sublime_plugin.TextCommand):
         except ValueError as ve:
             return Printer.get('error').write(str(ve))
 
-        sublime.active_window().show_input_panel("Input Class Name: ", 
+        sublime.active_window().show_input_panel("Input Class Name: ",
             "JSON2Apex", self.on_input_name, None, None)
         
     def on_input_name(self, name):
@@ -223,8 +223,8 @@ class DiffWithServer(sublime_plugin.TextCommand):
         if switch:
             return self.view.window().run_command("switch_project", {
                 "callback_options": {
-                    "callback_command": "diff_with_server", 
-                    "args": {                        
+                    "callback_command": "diff_with_server",
+                    "args": {
                         "switch": False,
                         "source_org": source_org
                     }
@@ -243,7 +243,7 @@ class DiffWithServer(sublime_plugin.TextCommand):
 
     def is_enabled(self):
         self.file_name = self.view.file_name()
-        if not self.file_name: 
+        if not self.file_name:
             return False
 
         self.settings = context.get_settings()
@@ -306,7 +306,7 @@ class ToggleMetadataObjects(sublime_plugin.WindowCommand):
         # Add subscribed ones and unsubscribed ones to list
         self.items.extend(sorted(subscribed_items))
         self.items.extend(sorted(unsubscripted_items))
-        self.window.show_quick_panel(self.items, self.on_done, 
+        self.window.show_quick_panel(self.items, self.on_done,
             sublime.MONOSPACE_FONT)
 
     def on_done(self, index):
@@ -416,7 +416,7 @@ class Convert15Id218Id(sublime_plugin.WindowCommand):
         super(Convert15Id218Id, self).__init__(*args, **kwargs)
 
     def run(self):
-        self.window.show_input_panel("Input 15 Id: ", 
+        self.window.show_input_panel("Input 15 Id: ",
             "", self.on_input, None, None)
 
     def on_input(self, input):
@@ -428,7 +428,7 @@ class DecodeUrl(sublime_plugin.WindowCommand):
         super(DecodeUrl, self).__init__(*args, **kwargs)
 
     def run(self):
-        self.window.show_input_panel("Input your URL to be decoded: ", 
+        self.window.show_input_panel("Input your URL to be decoded: ",
             "", self.on_input, None, None)
 
     def on_input(self, input):
@@ -440,7 +440,7 @@ class EncodeUrl(sublime_plugin.WindowCommand):
         super(EncodeUrl, self).__init__(*args, **kwargs)
 
     def run(self):
-        self.window.show_input_panel("Input your URL to be encoded: ", 
+        self.window.show_input_panel("Input your URL to be encoded: ",
             "", self.on_input, None, None)
 
     def on_input(self, input):
@@ -474,35 +474,35 @@ class ExportQueryToCsv(sublime_plugin.WindowCommand):
 
     def run(self, tooling=False):
         self.tooling = tooling
-        sublime.active_window().show_input_panel('Input Your %s SOQL:' % 
+        sublime.active_window().show_input_panel('Input Your %s SOQL:' %
             ('Tooling' if tooling else ''), "", self.on_input_soql, None, None)
 
     def on_input_soql(self, soql):
         self.soql = soql
 
         # Check whether the soql is valid and not parent-to-child query
-        match = re.match("SELECT\\s+[*\\w\\n,.:_\\s()]+\\s+FROM\\s+\\w+", 
+        match = re.match("SELECT\\s+[*\\w\\n,.:_\\s()]+\\s+FROM\\s+\\w+",
             self.soql, re.IGNORECASE)
         if not match:
             Printer.get("error").write("Your input SOQL is not valid")
             if sublime.ok_cancel_dialog("Want to try again?"):
-                self.window.show_input_panel('Input Your SOQL:', 
+                self.window.show_input_panel('Input Your SOQL:',
                     "", self.on_input_soql, None, None)
-            return 
+            return
 
         # If () in match, it means there has parent-to-child query
         if "(" in match.group(0):
             Printer.get("error").write("This feature does not support parent-to-child query")
             if sublime.ok_cancel_dialog("Want to try again?"):
-                self.window.show_input_panel('Input Your SOQL:', 
+                self.window.show_input_panel('Input Your SOQL:',
                     "", self.on_input_soql, None, None)
-            return 
+            return
 
         # Parse the sObject Name for CSV name
         matchstr = match.group(0)
         self.sobject = matchstr[matchstr.rfind(" ")+1:]
 
-        sublime.active_window().show_input_panel('Input CSV Name:', 
+        sublime.active_window().show_input_panel('Input CSV Name:',
             self.sobject, self.on_input_name, None, None)
 
     def on_input_name(self, name):
@@ -530,7 +530,7 @@ class ExportDataTemplateCommand(sublime_plugin.WindowCommand):
         recordtype_id = self.sobject_recordtypes_attr[sobject_recordtype]
 
         # handle this describe request
-        processor.handle_export_data_template_thread(sobject, 
+        processor.handle_export_data_template_thread(sobject,
             recordtype_name, recordtype_id, self.vertical)
 
     def is_enabled(self):
@@ -539,7 +539,7 @@ class ExportDataTemplateCommand(sublime_plugin.WindowCommand):
 class ExecuteRestTest(sublime_plugin.TextCommand):
     def run(self, edit):
         self.items = ["Get", "Post", "Put", "Patch", "Delete", "Tooling Query",
-                      "Query", "Query All", "Search", "Quick Search", 
+                      "Query", "Query All", "Search", "Quick Search",
                       "Head", "Retrieve Body"]
         self.view.show_popup_menu(self.items, self.on_choose_action),
 
@@ -557,7 +557,7 @@ class ExecuteRestTest(sublime_plugin.TextCommand):
         except ValueError as ve:
             Printer.get('error').write(str(ve))
             if not sublime.ok_cancel_dialog("Do you want to try again?", "Yes?"): return
-            self.view.window().show_input_panel("Input JSON Body: ", 
+            self.view.window().show_input_panel("Input JSON Body: ",
                 "", self.on_input, None, None)
             return
         processor.handle_execute_rest_test(self.chosen_action, self.sel, data)
@@ -569,7 +569,7 @@ class ExecuteRestTest(sublime_plugin.TextCommand):
 
 class GotoComponentCommand(sublime_plugin.TextCommand):
     """
-    Move the cursor to the class name, press shift key and double click left mouse, 
+    Move the cursor to the class name, press shift key and double click left mouse,
     the class file will be open, you can custom the bind key in mousemap path
     """
 
@@ -578,7 +578,7 @@ class GotoComponentCommand(sublime_plugin.TextCommand):
         sel_text = self.view.substr(self.view.word(sel.begin()))
         settings = context.get_settings()
         for ct in settings["subscribed_metadata_objects"]:
-            if "suffix" not in settings[ct]: 
+            if "suffix" not in settings[ct]:
                 continue
             suffix = settings[ct]["suffix"]
             folder = settings[ct]["directoryName"]
@@ -612,7 +612,7 @@ class ViewCodeCoverageCommand(sublime_plugin.TextCommand):
 
     def is_enabled(self):
         # Must Be File
-        if not self.view.file_name(): 
+        if not self.view.file_name():
             return False
         self.file_name = self.view.file_name()
 
@@ -622,9 +622,9 @@ class ViewCodeCoverageCommand(sublime_plugin.TextCommand):
 
         # Must be class or trigger
         self.attributes = util.get_file_attributes(self.file_name)
-        if not self.attributes["extension"]: 
+        if not self.attributes["extension"]:
             return False
-        if self.attributes["metadata_folder"] not in ["classes", "triggers"]: 
+        if self.attributes["metadata_folder"] not in ["classes", "triggers"]:
             return False
 
 
@@ -632,7 +632,7 @@ class ViewCodeCoverageCommand(sublime_plugin.TextCommand):
         with open(self.file_name, encoding="utf-8") as fp:
             self.body = fp.read()
 
-        if "@istest" in self.body.lower(): 
+        if "@istest" in self.body.lower():
             return False
 
         return True
@@ -676,7 +676,7 @@ class NewViewCommand(sublime_plugin.TextCommand):
 
     @input: user specified input
 
-    Usage: 
+    Usage:
         sublime.active_window().run_command("new_view", {
             "name": "ViewName",
             "input": "Example"
@@ -695,7 +695,7 @@ class NewDynamicViewCommand(sublime_plugin.TextCommand):
 
     @input: user specified input
 
-    Usage: 
+    Usage:
         sublime.active_window().run_command("new_dynamic_view", {
             "view_id": "view_id",
             "point": 0,
@@ -708,7 +708,7 @@ class NewDynamicViewCommand(sublime_plugin.TextCommand):
         view = sublime.active_window().active_view()
         if view_id and not view.id() == view_id:
             for v in sublime.active_window().views():
-                if v.id() == view_id: 
+                if v.id() == view_id:
                     view = v
 
         view.set_scratch(True)
@@ -754,7 +754,7 @@ class RetrieveMetadataCommand(sublime_plugin.WindowCommand):
 
 class RenameMetadata(sublime_plugin.TextCommand):
     def run(self, edit):
-        self.view.window().show_input_panel("Input New Name", 
+        self.view.window().show_input_panel("Input New Name",
             self.filename, self.on_input, None, None)
 
     def on_input(self, new_name):
@@ -771,7 +771,7 @@ class RenameMetadata(sublime_plugin.TextCommand):
         base, filename = os.path.split(self.file_name)
         base, folder = os.path.split(base)
         if folder not in self.settings["all_metadata_folders"]:return False
-        if not util.check_enabled(self.view.file_name(), check_cache=False): 
+        if not util.check_enabled(self.view.file_name(), check_cache=False):
             return False
 
         self.filename = filename.split(".")[0]
@@ -783,7 +783,7 @@ class RetrieveFileFromServer(sublime_plugin.TextCommand):
     def run(self, edit, switch=True):
         files = [self.view.file_name()]
         sublime.active_window().run_command("retrieve_files_from_server", {
-            "files": files, 
+            "files": files,
             "switch": switch
         })
 
@@ -793,7 +793,7 @@ class RetrieveFileFromServer(sublime_plugin.TextCommand):
         attributes = util.get_file_attributes(self.view.file_name())
         metadata_folder = attributes["metadata_folder"]
         if metadata_folder not in self.settings["all_metadata_folders"]: return False
-        if not util.check_enabled(self.view.file_name(), check_cache=False): 
+        if not util.check_enabled(self.view.file_name(), check_cache=False):
             return False
 
         return True
@@ -811,7 +811,7 @@ class RetrieveFilesFromServer(sublime_plugin.WindowCommand):
             message = "Confirm retrieving %s from server?" % (
                 "these files" if len(files) > 1 else "this file"
             )
-            if not sublime.ok_cancel_dialog(message, "Confirm?"): 
+            if not sublime.ok_cancel_dialog(message, "Confirm?"):
                 return
 
         settings = context.get_settings()
@@ -821,7 +821,7 @@ class RetrieveFilesFromServer(sublime_plugin.WindowCommand):
         if switch:
             return self.window.run_command("switch_project", {
                 "callback_options": {
-                    "callback_command": "retrieve_files_from_server", 
+                    "callback_command": "retrieve_files_from_server",
                     "args": {
                         "files": files,
                         "switch": False,
@@ -854,7 +854,7 @@ class RetrieveFilesFromServer(sublime_plugin.WindowCommand):
             else:
                 types[metadata_object] = [name]
 
-        processor.handle_retrieve_package(types, extract_to, 
+        processor.handle_retrieve_package(types, extract_to,
             source_org=source_org, ignore_package_xml=True)
 
     def is_visible(self, files):
@@ -864,7 +864,7 @@ class RetrieveFilesFromServer(sublime_plugin.WindowCommand):
             if not os.path.isfile(_file): continue # Ignore folder
             metadata_folder = util.get_metadata_folder(_file)
             if metadata_folder not in settings["all_metadata_folders"]: return False
-            if not util.check_enabled(_file, check_cache=False): 
+            if not util.check_enabled(_file, check_cache=False):
                 return False
 
         return True
@@ -890,7 +890,7 @@ class DestructFileFromServer(sublime_plugin.TextCommand):
         self.settings = context.get_settings()
         metadata_folder = util.get_metadata_folder(self.view.file_name())
         if metadata_folder not in self.settings["all_metadata_folders"]:return False
-        if not util.check_enabled(self.view.file_name(), check_cache=False): 
+        if not util.check_enabled(self.view.file_name(), check_cache=False):
             return False
 
         return True
@@ -916,7 +916,7 @@ class DestructFilesFromServer(sublime_plugin.WindowCommand):
             if not os.path.isfile(_file): continue # Ignore folder
             _folder = util.get_metadata_folder(_file)
             if _folder not in self.settings["all_metadata_folders"]: return False
-            if not util.check_enabled(_file, check_cache=False): 
+            if not util.check_enabled(_file, check_cache=False):
                 return False
 
         return True
@@ -935,7 +935,7 @@ class DeployZip(sublime_plugin.WindowCommand):
         path = sublime.get_clipboard()
         if not path or not os.path.isfile(path): path = ""
         if not path.endswith("zip"): path = ""
-        self.window.show_input_panel("Input Zip File Path:", 
+        self.window.show_input_panel("Input Zip File Path:",
             path, self.on_input, None, None)
 
     def on_input(self, zipfile_path):
@@ -949,11 +949,11 @@ class DeployZip(sublime_plugin.WindowCommand):
     def execute_deploy(self):
         settings = context.get_settings()
         deploy_options = settings["deploy_options"]
-        testLevel = deploy_options.get("testLevel", "NoTestRun") 
+        testLevel = deploy_options.get("testLevel", "NoTestRun")
         if testLevel == "RunSpecifiedTests" and not self.chosen_classes:
             return self.window.run_command("choose_test_classes", {
                 "callback_options": {
-                    "callback_command": "deploy_zip", 
+                    "callback_command": "deploy_zip",
                     "args": {
                         "zipfile_path": self.zipfile_path,
                         "chosen_classes": self.chosen_classes
@@ -962,7 +962,7 @@ class DeployZip(sublime_plugin.WindowCommand):
             })
 
 
-        processor.handle_deploy_thread(util.base64_encode(self.zipfile_path), 
+        processor.handle_deploy_thread(util.base64_encode(self.zipfile_path),
             chosen_classes=self.chosen_classes)
 
 class DeployOpenFilesToServer(sublime_plugin.WindowCommand):
@@ -972,7 +972,7 @@ class DeployOpenFilesToServer(sublime_plugin.WindowCommand):
     def run(self, select_all=True):
         # If deploy all open files
         if select_all:
-            return sublime.active_window().run_command("deploy_files_to_server", 
+            return sublime.active_window().run_command("deploy_files_to_server",
                 {"files": list(self.file_attributes.values())})
         
         # If just deploy some files
@@ -998,7 +998,7 @@ class DeployOpenFilesToServer(sublime_plugin.WindowCommand):
                     chosen_files.append(self.file_attributes[item[4:]])
 
             if chosen_files:
-                sublime.active_window().run_command("deploy_files_to_server", 
+                sublime.active_window().run_command("deploy_files_to_server",
                     {"files": chosen_files}
                 )
             return
@@ -1015,7 +1015,7 @@ class DeployOpenFilesToServer(sublime_plugin.WindowCommand):
 
         # Start next round
         self.populate_items()
-        sublime.set_timeout(lambda:self.window.show_quick_panel(self.items, 
+        sublime.set_timeout(lambda:self.window.show_quick_panel(self.items,
             self.on_choose, sublime.MONOSPACE_FONT), 10)
 
     def is_enabled(self):
@@ -1033,7 +1033,7 @@ class DeployOpenFilesToServer(sublime_plugin.WindowCommand):
         for _view in views:
             _file = _view.file_name()
             # Ignore folder
-            if not _file or not os.path.isfile(_file): 
+            if not _file or not os.path.isfile(_file):
                 continue
             attributes = util.get_file_attributes(_file)
             # Ignore non-sfdc files
@@ -1043,7 +1043,7 @@ class DeployOpenFilesToServer(sublime_plugin.WindowCommand):
             self.file_attributes[attributes["fullName"]] = _file
 
         # If there is no sfdc code file, just disable this command
-        if not self.file_attributes: 
+        if not self.file_attributes:
             return False
 
         return True
@@ -1092,7 +1092,7 @@ class DeployFilesToServer(sublime_plugin.WindowCommand):
         if switch:
             return self.window.run_command("switch_project", {
                 "callback_options": {
-                    "callback_command": "deploy_files_to_server", 
+                    "callback_command": "deploy_files_to_server",
                     "args": {
                         "files": files,
                         "switch": False,
@@ -1102,11 +1102,11 @@ class DeployFilesToServer(sublime_plugin.WindowCommand):
             })
 
         deploy_options = settings["deploy_options"]
-        testLevel = deploy_options.get("testLevel", "NoTestRun") 
+        testLevel = deploy_options.get("testLevel", "NoTestRun")
         if testLevel == "RunSpecifiedTests" and not chosen_classes:
             return self.window.run_command("choose_test_classes", {
                 "callback_options": {
-                    "callback_command": "deploy_files_to_server", 
+                    "callback_command": "deploy_files_to_server",
                     "args": {
                         "files": files,
                         "switch": False,
@@ -1125,7 +1125,7 @@ class DeployFilesToServer(sublime_plugin.WindowCommand):
         # Keep the files to deploy
         base64_encoded_zip = util.build_deploy_package(files)
         processor.handle_deploy_thread(
-            base64_encoded_zip, 
+            base64_encoded_zip,
             source_org=source_org,
             chosen_classes=chosen_classes
         )
@@ -1167,7 +1167,7 @@ class CopyFilesToProject(sublime_plugin.WindowCommand):
         if switch:
             return self.window.run_command("switch_project", {
                 "callback_options": {
-                    "callback_command": "copy_files_to_project", 
+                    "callback_command": "copy_files_to_project",
                     "args": {
                         "files": files,
                         "switch": False,
@@ -1192,7 +1192,7 @@ class CopyFilesToProject(sublime_plugin.WindowCommand):
         self.attributes = []
         for _file in files:
             if not os.path.isfile(_file): continue # Ignore folder
-            if _file.endswith("-meta.xml"): continue # Ignore meta file 
+            if _file.endswith("-meta.xml"): continue # Ignore meta file
             attribute = util.get_file_attributes(_file)
             if attribute["metadata_folder"] not in self.settings["all_metadata_folders"]:
                 continue
@@ -1311,7 +1311,7 @@ class ExportWorkbookCommand(sublime_plugin.WindowCommand):
         super(ExportWorkbookCommand, self).__init__(*args, **kwargs)
 
     def run(self):
-        self.window.show_input_panel("Input Sobjects(* or sobjects separated with semi-colon), Case is Sensitive", 
+        self.window.show_input_panel("Input Sobjects(* or sobjects separated with semi-colon), Case is Sensitive",
             "*", self.on_input, None, None)
 
     def on_input(self, input):
@@ -1332,7 +1332,7 @@ class ExportWorkbookCommand(sublime_plugin.WindowCommand):
                 if sobject not in sobjects_describe:
                     message = '"%s" is not valid sobject, do you want to try again?' % sobject
                     if not sublime.ok_cancel_dialog(message, "Continue?"): return
-                    self.window.show_input_panel("Sobjects(* means all, or sobjects seprated with semi-colon)", 
+                    self.window.show_input_panel("Sobjects(* means all, or sobjects seprated with semi-colon)",
                         input, self.on_input, None, None)
                     return
 
@@ -1376,7 +1376,7 @@ class PreviewPageCommand(sublime_plugin.TextCommand):
 
 class RunOneTestCommand(sublime_plugin.WindowCommand):
     """ List the test classes from local cache, after any one is chosen,
-        get the attribute of the chosen class and run test, 
+        get the attribute of the chosen class and run test,
 
         Cache structure is shown as below:
         {
@@ -1455,8 +1455,8 @@ class ChooseTestClasses(sublime_plugin.WindowCommand):
                 cname = item["name"]
 
             classItem = "%s[%s] %s" % (
-                " " * 4, 
-                "√" if cname in self.chosen_classes else "x", 
+                " " * 4,
+                "√" if cname in self.chosen_classes else "x",
                 cname
             )
             if cname in self.chosen_classes:
@@ -1489,7 +1489,7 @@ class ChooseTestClasses(sublime_plugin.WindowCommand):
         if hasattr(self, "index"):
             selected_index = self.index
 
-        self.window.show_quick_panel(self.items, self.on_done, 
+        self.window.show_quick_panel(self.items, self.on_done,
             sublime.MONOSPACE_FONT, selected_index)
 
     def on_done(self, index):
@@ -1550,9 +1550,9 @@ class RunSyncTest(sublime_plugin.TextCommand):
     def is_enabled(self):
         # Get current file name and Read file content
         file_name = self.view.file_name()
-        if not file_name or not file_name.endswith(".cls"): 
+        if not file_name or not file_name.endswith(".cls"):
             return False
-        if not util.check_enabled(file_name): 
+        if not util.check_enabled(file_name):
             return False
 
         # Test class must be class firstly
@@ -1587,7 +1587,7 @@ class RunAsyncTest(sublime_plugin.WindowCommand):
         # Check whether any classes are chosen
         if len(files) == 0: return False
 
-        # Check whether there are test class in chosen classes 
+        # Check whether there are test class in chosen classes
         self.class_ids = []
         for f in files:
             component_attribute, name = util.get_component_attribute(f)
@@ -1613,9 +1613,9 @@ class RunTestCommand(sublime_plugin.TextCommand):
     def is_enabled(self):
         # Get current file name and Read file content
         file_name = self.view.file_name()
-        if not file_name or not file_name.endswith(".cls"): 
+        if not file_name or not file_name.endswith(".cls"):
             return False
-        if not util.check_enabled(file_name): 
+        if not util.check_enabled(file_name):
             return False
 
         # Test class must be class firstly
@@ -1725,7 +1725,7 @@ class ExecuteQuery(sublime_plugin.TextCommand):
         })
 
     def is_enabled(self):
-        # Selection must start SELECT, 
+        # Selection must start SELECT,
         # otherwise you can't see this command
         self.selection = self.view.substr(self.view.sel()[0])
         if not self.selection or not self.selection.upper().startswith("SELECT"):
@@ -1792,8 +1792,8 @@ class LoginToSfdcCommand(sublime_plugin.WindowCommand):
         session = util.get_session_info(settings)
 
         # If .config/session.json is not exist, login firstly
-        if not session: 
-            return self.window.run_command('login', 
+        if not session:
+            return self.window.run_command('login',
                 {
                     "callback_options": {
                         "callback_command": "login_to_sfdc",
@@ -1964,7 +1964,7 @@ class CreateStaticResource(sublime_plugin.WindowCommand):
         self.content_type = self.content_types[index]
         
         self.input_name_message = "Please Input StaticResource Name: "
-        self.window.show_input_panel(self.input_name_message, 
+        self.window.show_input_panel(self.input_name_message,
             "", self.on_input_name, None, None)
 
     def on_input_name(self, input):
@@ -1972,7 +1972,7 @@ class CreateStaticResource(sublime_plugin.WindowCommand):
         if not re.match('^[a-zA-Z]+\\w+$', input):
             message = 'Invalid name, do you want to try again?'
             if not sublime.ok_cancel_dialog(message, "Try Again?"): return
-            self.window.show_input_panel(self.input_name_message, 
+            self.window.show_input_panel(self.input_name_message,
                 "", self.on_input_name, None, None)
             return
         
@@ -1980,7 +1980,7 @@ class CreateStaticResource(sublime_plugin.WindowCommand):
 
         # Input file location
         self.input_location_message = "Please Input File or Path for StaticResource: "
-        self.window.show_input_panel(self.input_location_message, 
+        self.window.show_input_panel(self.input_location_message,
             "", self.on_input_location, None, None)
 
     def on_input_location(self, location):
@@ -1988,7 +1988,7 @@ class CreateStaticResource(sublime_plugin.WindowCommand):
         if not os.path.exists(location) and not os.path.isfile(location):
             if not sublime.ok_cancel_dialog("Invalid file or path", "Try Again?"):
                 return
-            self.window.show_input_panel(self.input_location_message, 
+            self.window.show_input_panel(self.input_location_message,
                 "", self.on_input_location, None, None)
             return
         
@@ -2012,9 +2012,9 @@ class CreateComponentCommand(sublime_plugin.WindowCommand):
         super(CreateComponentCommand, self).__init__(*args, **kwargs)
 
     def run(self, template_name=None,
-                  component_name=None, 
-                  component_type=None, 
-                  markup_or_body=None, 
+                  component_name=None,
+                  component_type=None,
+                  markup_or_body=None,
                   sobject_name=None):
         self.template_name = template_name
         self.component_name = component_name
@@ -2027,9 +2027,9 @@ class CreateComponentCommand(sublime_plugin.WindowCommand):
         self.template_names = [[n, templates[n]["description"]] for n in templates]
         self.template_names = sorted(self.template_names)
 
-        # After input # in visualforce page, we can get 
+        # After input # in visualforce page, we can get
         # the component name and template name, no need to choose again
-        if self.component_name and self.template_name: 
+        if self.component_name and self.template_name:
             self.template_attr = templates[self.template_name]
             self.create_component()
         else:
@@ -2068,10 +2068,11 @@ class CreateComponentCommand(sublime_plugin.WindowCommand):
     def create_component(self):
         self.settings = context.get_settings()
         workspace = self.settings["workspace"]
+        templates_dir = os.path.join(sublime.packages_path(), "haoide/config/templates")
 
         extension = self.template_attr["extension"]
         directory = self.template_attr["directory"]
-        with open(os.path.join(workspace, ".templates", directory)) as fp:
+        with open(os.path.join(templates_dir, directory)) as fp:
             body = fp.read()
         if extension == ".trigger":
             body = body.replace("Trigger_Name__c", self.component_name).replace("Sobject_Name__c", self.sobject_name)
@@ -2096,13 +2097,13 @@ class CreateComponentCommand(sublime_plugin.WindowCommand):
         with open(file_name, "w") as fp:
             fp.write(body)
 
-        # In windows, new file is not shown in the sidebar, 
+        # In windows, new file is not shown in the sidebar,
         # we need to refresh the sublime workspace to show it
         sublime.active_window().run_command("refresh_folder_list")
 
         # Build Post body
         data = {
-            "name": self.component_name, 
+            "name": self.component_name,
             self.markup_or_body: body
         }
 
@@ -2113,9 +2114,9 @@ class CreateComponentCommand(sublime_plugin.WindowCommand):
         elif self.component_type in ["ApexPage", "ApexComponent"]:
             data["MasterLabel"] = self.component_name
 
-        processor.handle_create_component(data, self.component_name, 
-                                                self.component_type, 
-                                                self.markup_or_body, 
+        processor.handle_create_component(data, self.component_name,
+                                                self.component_type,
+                                                self.markup_or_body,
                                                 file_name)
 
 class SaveToServer(sublime_plugin.TextCommand):
@@ -2124,7 +2125,7 @@ class SaveToServer(sublime_plugin.TextCommand):
         settings = context.get_settings()
         if settings["confirm_on_save"]:
             message = "Confirm to continue save operation?"
-            if not sublime.ok_cancel_dialog(message, "Save to Server?"): 
+            if not sublime.ok_cancel_dialog(message, "Save to Server?"):
                 return
 
         # Automatically save current file if dirty
@@ -2171,7 +2172,7 @@ class SwitchProjectCommand(sublime_plugin.WindowCommand):
         self.callback_options = callback_options
         settings = context.get_settings()
         projects = settings["projects"]
-        self.projects = ["(" + ('Active' if projects[p]["default"] else 
+        self.projects = ["(" + ('Active' if projects[p]["default"] else
             'Inactive') + ") " + p for p in projects]
         self.projects = sorted(self.projects, reverse=False)
         self.window.show_quick_panel(self.projects, self.on_done)
@@ -2258,14 +2259,14 @@ class UpdateUserPassword(sublime_plugin.WindowCommand):
         user_name = self.users_name[index]
         self.user_id = self.users[user_name]
 
-        sublime.active_window().show_input_panel("Input New Password: ", 
+        sublime.active_window().show_input_panel("Input New Password: ",
             "", self.on_input, None, None)
 
     def on_input(self, password):
         if not re.match('[\s\S]{5,22}', password):
             message = 'Invalid password, do you want to try again?'
             if not sublime.ok_cancel_dialog(message, "Try Again?"): return
-            return sublime.active_window().show_input_panel("Input New Password: ", 
+            return sublime.active_window().show_input_panel("Input New Password: ",
                 "", self.on_input, None, None)
 
         processor.handle_update_user_password(self.user_id, password)
@@ -2351,7 +2352,7 @@ class ExtractToHere(sublime_plugin.WindowCommand):
         Printer.get("log").write_start().write("Extracted to " + extract_to)
 
     def is_visible(self, files):
-        if not files or len(files) > 1: 
+        if not files or len(files) > 1:
             return False
 
         self._file = files[0]
@@ -2385,7 +2386,7 @@ class RefreshFileFromServer(sublime_plugin.TextCommand):
         file_name = self.view.file_name()
         if not file_name: return False
         attr = util.get_component_attribute(file_name)[0]
-        if not attr or "url" not in attr: 
+        if not attr or "url" not in attr:
             return False
 
         return True

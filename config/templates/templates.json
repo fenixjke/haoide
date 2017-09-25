@@ -118,15 +118,15 @@
             "extension": ".cls",
             "description": "Triggers Template"
         },
-        "Triggers Interface": {
+        "ITrigger": {
             "directory": "ApexClass/ITrigger.cls",
             "extension": ".cls",
             "description": "ITrigger"
         },
-        "Triggers Implementation": {
+        "ITriggerHandler": {
             "directory": "ApexClass/Triggers Implementation.cls",
             "extension": ".cls",
-            "description": "Implementation Class for Triggers Template"
+            "description": "ITriggerHandler"
         }
     },
 

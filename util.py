@@ -27,8 +27,8 @@ from xml.sax.saxutils import unescape
 
 
 def load_templates():
-    settings = context.get_settings()
     templates_dir = os.path.join(sublime.packages_path(), "haoide/config/templates/templates.json")
+
     with open(templates_dir) as fp:
         templates = json.loads(fp.read())
 
