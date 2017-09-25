@@ -1,6 +1,12 @@
 @isTest
 private class Class_Name__c {
-    static testMethod void testMethod1() {
-        
-    }
+	@testSetup
+  static void init() {
+      
+  }
+
+  @isTest
+  static void test() {
+  	
+  }
 }

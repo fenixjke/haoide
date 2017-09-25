@@ -29,7 +29,6 @@ from xml.sax.saxutils import unescape
 def load_templates():
     settings = context.get_settings()
     templates_dir = os.path.join(sublime.packages_path(), "haoide/config/templates/templates.json")
-    print(templates_dir)
     with open(templates_dir) as fp:
         templates = json.loads(fp.read())
 
@@ -43,19 +42,19 @@ def copy_files_in_folder(source_dir, target_dir):
         @target_dir -- Target Directory
     """
 
-    for _file in os.listdir(source_dir): 
-        sourceFile = os.path.join(source_dir, _file) 
-        targetFile = os.path.join(target_dir, _file) 
+    for _file in os.listdir(source_dir):
+        sourceFile = os.path.join(source_dir, _file)
+        targetFile = os.path.join(target_dir, _file)
 
-        if os.path.isfile(sourceFile): 
-            if not os.path.exists(target_dir): 
-                os.makedirs(target_dir) 
+        if os.path.isfile(sourceFile):
+            if not os.path.exists(target_dir):
+                os.makedirs(target_dir)
             if not os.path.exists(targetFile) or (
                     os.path.exists(targetFile) and (
                         os.path.getsize(targetFile) != os.path.getsize(sourceFile)
                     )):
-                open(targetFile, "wb").write(open(sourceFile, "rb").read()) 
-        if os.path.isdir(sourceFile): 
+                open(targetFile, "wb").write(open(sourceFile, "rb").read())
+        if os.path.isdir(sourceFile):
             copy_files_in_folder(sourceFile, targetFile)
 
 def copy_files(attributes, target_dir):
@@ -72,7 +71,7 @@ def copy_files(attributes, target_dir):
     try:
         for attribute in attributes:
             # Copy file to target dir
-            # 
+            #
             # Build target metdata folder, make it if not exist
             target_meta_folder = os.path.join(
                 target_dir, "src",
@@ -85,7 +84,7 @@ def copy_files(attributes, target_dir):
 
             # Build target file
             target_file = os.path.join(
-                target_meta_folder, 
+                target_meta_folder,
                 attribute["fullName"]
             )
 
@@ -114,8 +113,8 @@ def copy_files(attributes, target_dir):
 
 def get_described_metadata(settings):
     cache_file = os.path.join(
-        settings["workspace"], 
-        ".config", 
+        settings["workspace"],
+        ".config",
         "metadata.json"
     )
 
@@ -130,9 +129,9 @@ def get_instance(settings):
     """ Get instance by instance_url
 
     Return:
-    * instance -- instance of active project, for example, 
+    * instance -- instance of active project, for example,
             if instance_url is https://ap1.salesforce.com,
-                instance will be `ap1`, 
+                instance will be `ap1`,
             if instance_url is https://company-name.cs18.my.salesforce.com
                 instance will be `company-name.cs18.my`
     """
@@ -194,7 +193,7 @@ def view_coverage(name, file_name, body):
 
     # Append coverage statistic info
     coverage_statistic = "%s Coverage: %.2f%%(%s/%s)" % (
-        name, numLocationsCovered / numLocations * 100, 
+        name, numLocationsCovered / numLocations * 100,
         numLocationsCovered, numLocations
     )
     
@@ -393,11 +392,11 @@ def set_component_attribute(attributes, lastModifiedDate):
     components_dict = s.get(username, {})
 
     # Prevent exception if no component in org
-    if _type not in components_dict: 
+    if _type not in components_dict:
         components_dict = {_type : {}}
 
     # Build components dict
-    attr = components_dict[_type][fullName.lower()] 
+    attr = components_dict[_type][fullName.lower()]
     attr["lastModifiedDate"] = lastModifiedDate
     components_dict[_type][fullName.lower()] = attr
 
@@ -469,8 +468,8 @@ def get_symbol_tables(username):
     return symbol_tables
 
 def get_sobject_completion_list(
-        sobject_describe, 
-        prefix="", 
+        sobject_describe,
+        prefix="",
         display_fields=True,
         display_parent_relationships=True,
         display_child_relationships=True):
@@ -497,7 +496,7 @@ def get_sobject_completion_list(
     if display_parent_relationships:
         for key in sorted(sobject_describe["parentRelationships"]):
             parent_sobject = sobject_describe["parentRelationships"][key]
-            completion_list.append((prefix + key + "\t" + parent_sobject + "(c2p)", key)) 
+            completion_list.append((prefix + key + "\t" + parent_sobject + "(c2p)", key))
 
     # Child Relationship Describe
     if display_child_relationships:
@@ -535,7 +534,7 @@ def get_component_completion(username, component_type, tag_has_ending=False):
     return completion_list
 
 def get_component_attributes(settings, component_name):
-    component_dir = os.path.join(settings["workspace"], "src", 
+    component_dir = os.path.join(settings["workspace"], "src",
         "components", component_name+".component")
     completion_list = []
     if os.path.isfile(component_dir):
@@ -584,10 +583,10 @@ def convert_15_to_18(the15Id):
     cmap = {
         "00000": "A", "00001": "B", "00010": "C", "00011": "D", "00100": "E",
         "00101": "F", "00110": "G", "00111": "H", "01000": "I", "01001": "J",
-        "01010": "K", "01011": "L", "01100": "M", "01101": "N", "01110": "O", 
-        "01111": "P", "10000": "Q", "10001": "R", "10010": "S", "10011": "T", 
-        "10100": "U", "10101": "V", "10110": "W", "10111": "X", "11000": "Y", 
-        "11001": "Z", "11010": "0", "11011": "1", "11100": "2", "11101": "3", 
+        "01010": "K", "01011": "L", "01100": "M", "01101": "N", "01110": "O",
+        "01111": "P", "10000": "Q", "10001": "R", "10010": "S", "10011": "T",
+        "10100": "U", "10101": "V", "10110": "W", "10111": "X", "11000": "Y",
+        "11001": "Z", "11010": "0", "11011": "1", "11100": "2", "11101": "3",
         "11110": "4", "11111": "5"
     }
 
@@ -737,7 +736,7 @@ def get_soql_match_region(view, pt):
             matched_region = m
             break
 
-    if not matched_region: 
+    if not matched_region:
         return (matched_region, is_between_start_and_from, sobject_name)
 
     match_str = view.substr(matched_region)
@@ -761,7 +760,7 @@ def parse_symbol_table(symbol_table):
     """
 
     completions = {}
-    if not symbol_table: 
+    if not symbol_table:
         return completions;
 
     for c in symbol_table.get('constructors', []):
@@ -867,7 +866,7 @@ def add_config_history(operation, content, settings, ext="json"):
     * history_content -- the content needed to keep
     """
     outputdir = os.path.join(settings["workspace"], ".config")
-    if not os.path.exists(outputdir): 
+    if not os.path.exists(outputdir):
         os.makedirs(outputdir)
 
     with open(outputdir + "/%s.%s" % (operation, ext), "w") as fp:
@@ -1072,7 +1071,7 @@ def build_package_types(package_xml_content):
     metadata_types = result["Package"]["types"]
 
     # If there is only one types in package
-    if isinstance(metadata_types, dict): 
+    if isinstance(metadata_types, dict):
         metadata_types = [metadata_types]
 
     types = {}
@@ -1132,11 +1131,11 @@ def build_package_dict(files, ignore_folder=True):
     package_dict = {}
     for f in files:
         # Ignore folder
-        if ignore_folder and not os.path.isfile(f): 
+        if ignore_folder and not os.path.isfile(f):
             continue
 
         # Ignore "-meta.xml"
-        if f.endswith("-meta.xml"): 
+        if f.endswith("-meta.xml"):
             continue
 
         # If ignore_folder is true and f is folder
@@ -1210,10 +1209,10 @@ def build_package_xml(settings, package_dict):
 def build_destructive_package_by_files(files, ignore_folder=True):
     settings = context.get_settings()
     workspace = settings["workspace"]
-    if not os.path.exists(workspace): 
+    if not os.path.exists(workspace):
         os.makedirs(workspace)
 
-    # Constucture package dict 
+    # Constucture package dict
     package_dict = build_package_dict(files, ignore_folder)
 
     # Build destructiveChanges.xml
@@ -1262,8 +1261,8 @@ def build_destructive_package_by_package_xml(types):
             }
 
     Return:
-        * base64_encode -- base64 encode zip file, 
-            which contains destructiveChanges.xml and package.xml    
+        * base64_encode -- base64 encode zip file,
+            which contains destructiveChanges.xml and package.xml
 
     """
     settings = context.get_settings()
@@ -1320,9 +1319,9 @@ def build_deploy_package(files):
         for f in package_dict[meta_type]:
             # Define write_to
             write_to = (
-                f["metadata_folder"], 
-                ("/" + f["folder"]) if f["folder"] else "", 
-                f["name"], 
+                f["metadata_folder"],
+                ("/" + f["folder"]) if f["folder"] else "",
+                f["name"],
                 f["extension"]
             )
 
@@ -1357,7 +1356,7 @@ def build_deploy_package(files):
     try:
         time_stamp = time.strftime("%Y%m%d%H%M", time.localtime(time.time()))
         xml_dir = os.path.join(settings["workspace"], ".deploy")
-        if not os.path.exists(xml_dir): 
+        if not os.path.exists(xml_dir):
             os.mkdir(xml_dir)
         
         # http://stackoverflow.com/questions/1627198/python-mkdir-giving-me-wrong-permissions
@@ -1475,7 +1474,7 @@ def compress_package(package_dir):
     for dirpath, dirnames, filenames in os.walk(package_dir):
         basename = dirpath[len(package_dir)+1:]
         for filename in filenames:
-            zf.write(os.path.join(dirpath, filename), basename+"/"+filename) 
+            zf.write(os.path.join(dirpath, filename), basename+"/"+filename)
     zf.close()
 
     base64_package = base64_encode(zipfile_path)
@@ -1484,8 +1483,8 @@ def compress_package(package_dir):
     return base64_package
 
 def extract_encoded_zipfile(encoded_zip_file, extract_to, ignore_package_xml=False):
-    """ Decode the base64 encoded file and 
-        extract the zip file to workspace and 
+    """ Decode the base64 encoded file and
+        extract the zip file to workspace and
         rename the "unpackaged" to "src"
     """
 
@@ -1502,7 +1501,7 @@ def extract_encoded_zipfile(encoded_zip_file, extract_to, ignore_package_xml=Fal
     # Remove original src tree
     os.remove(zipfile_path)
 
-    # In windows, folder is not shown in the sidebar, 
+    # In windows, folder is not shown in the sidebar,
     # we need to refresh the sublime workspace to show it
     sublime.active_window().run_command("refresh_folder_list")
 
@@ -1516,7 +1515,7 @@ def extract_zipfile(zipfile_path, extract_to):
         raise BaseException(str(ex))
         return
 
-    if not os.path.exists(extract_to): 
+    if not os.path.exists(extract_to):
         os.makedirs(extract_to)
 
     for filename in zfile.namelist():
@@ -1534,10 +1533,10 @@ def extract_zipfile(zipfile_path, extract_to):
 def extract_file(zipfile_path, extract_to, ignore_package_xml=False):
     zfile = zipfile.ZipFile(zipfile_path, 'r')
     for filename in zfile.namelist():
-        if filename.endswith('/'): 
+        if filename.endswith('/'):
             continue
 
-        if ignore_package_xml and filename == "unpackaged/package.xml": 
+        if ignore_package_xml and filename == "unpackaged/package.xml":
             continue
 
         if filename.startswith("unpackaged"):
@@ -1618,7 +1617,7 @@ def parse_package(package_content):
             members.append("<met:members>%s</met:members>" % t["members"])
 
         elements.append("<types>%s%s</types>" % (
-            "".join(members), 
+            "".join(members),
             "<name>%s</name>" % t["name"]
         ))
 
@@ -1635,7 +1634,7 @@ def reload_file_attributes(file_properties, settings=None, append=False):
                     file properties will be appended to local cache
     """
     # Get settings
-    if not settings: 
+    if not settings:
         settings = context.get_settings()
 
     metadata_body_or_markup = {
@@ -1647,7 +1646,7 @@ def reload_file_attributes(file_properties, settings=None, append=False):
     }
 
     # If the package only contains `package.xml`
-    if isinstance(file_properties, dict): 
+    if isinstance(file_properties, dict):
         file_properties = [file_properties]
 
     component_settings = sublime.load_settings(context.COMPONENT_METADATA_SETTINGS)
@@ -1748,7 +1747,7 @@ def format_debug_logs(settings, records):
     # Headers
     headers = ""
     for header in debug_log_headers:
-        headers += "%-*s" % (debug_log_headers_properties[header]["width"], 
+        headers += "%-*s" % (debug_log_headers_properties[header]["width"],
             debug_log_headers_properties[header]["label"])
 
     # Content
@@ -1767,26 +1766,26 @@ def format_debug_logs(settings, records):
 
 def format_error_message(result):
     """Format message as below format
-           message:     The requested resource does not exist   
+           message:     The requested resource does not exist
                url:     url
-         errorCode:     NOT_FOUND                       
-       status_code:     404     
+         errorCode:     NOT_FOUND
+       status_code:     404
 
     * result -- dict error when request status code > 399
-    * return -- formated error message   
+    * return -- formated error message
     """
     # Add time stamp
     result["Time Stamp"] = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time()))
 
     error_message = ""
     for key, value in result.items():
-        if isinstance(value, list): 
-            if value: value = value[0] 
+        if isinstance(value, list):
+            if value: value = value[0]
             else: continue
         elif not value: continue
         
         error_message += "% 30s\t" % "{0}: ".format(key)
-        value = urllib.parse.unquote(unescape(none_value(value), 
+        value = urllib.parse.unquote(unescape(none_value(value),
             {"&apos;": "'", "&quot;": '"'}))
         error_message += "%-30s\t" % value + "\n"
 
@@ -1931,7 +1930,7 @@ def parse_all(apex):
             # all_dict = dict(list(methods_dict.items()) + list(properties_dict.items()))
 
             # Below class are duplicate in different namespace
-            # Communities, TimeZone, UnsupportedOperationException, Test, QueryException, Action            
+            # Communities, TimeZone, UnsupportedOperationException, Test, QueryException, Action
             if class_name.lower() in apex_completions:
                 apex_completions[class_name.lower()] = [apex_completions[class_name.lower()]]
                 apex_completions[class_name.lower()].append({
@@ -2046,12 +2045,12 @@ def parse_sync_test_coverage(result):
         numLocationsCovered = numLocations - numLocationsNotCovered
         percent = numLocationsCovered / numLocations * 100 if numLocations != 0 else 0
         coverageRow.append("%-*s" % (
-            header_width["Percent"], 
+            header_width["Percent"],
             "%.2f%%" % percent
         ))
         coverageRow.append("%-*s" % (
             header_width["Lines"], "%s/%s" % (
-                numLocationsCovered, 
+                numLocationsCovered,
                 numLocations
             )
         ))
@@ -2270,7 +2269,7 @@ def write_metadata_to_csv(fp, columns, metadata, sobject):
                 cell_value = "%s" % cell_value
 
             # Unescape special code to normal
-            cell_value = urllib.parse.unquote(unescape(cell_value, 
+            cell_value = urllib.parse.unquote(unescape(cell_value,
                 {"&apos;": "'", "&quot;": '"'}))
 
             # Append cell_value to list in order to write list to csv
@@ -2464,7 +2463,7 @@ def query_to_csv(result, soql):
 
             for _header in header.split("."):
                 # Avoid KeyError when parsed the row value,
-                # Build mapping between lower case and normal 
+                # Build mapping between lower case and normal
                 field_case_mapping = {}
                 for k in row_value:
                     field_case_mapping[k.lower()] = k
@@ -2502,7 +2501,7 @@ def parse_execute_anonymous_xml(result):
         view_result = compileProblem + " at line " + line +\
             " column " + column
 
-    view_result = urllib.parse.unquote(unescape(view_result, 
+    view_result = urllib.parse.unquote(unescape(view_result,
         {"&apos;": "'", "&quot;": '"'}))
 
     return view_result
@@ -2579,7 +2578,7 @@ def generate_workbook(result, workspace, workbook_field_describe_columns):
                 row_value = field_type if key == "type" else "%s" % row_value
 
             # Unescape special code to normal
-            row_value = urllib.parse.unquote(unescape(row_value, 
+            row_value = urllib.parse.unquote(unescape(row_value,
                 {"&apos;": "'", "&quot;": '"'}))
 
             # Append row_value to list in order to write list to csv
@@ -2604,9 +2603,9 @@ def generate_workbook(result, workspace, workbook_field_describe_columns):
 
 record_keys = ["label", "name", "type", "length"]
 record_key_width = {
-    "label": 40, 
-    "name": 40, 
-    "type": 20, 
+    "label": 40,
+    "name": 40,
+    "type": 20,
     "length": 7
 }
 recordtype_key_width = {
@@ -2624,7 +2623,7 @@ childrelationship_key_width = {
 
 seprate = 100 * "-" + "\n"
 def parse_sobject_field_result(result):
-    """According to sobject describe result, display record type information, 
+    """According to sobject describe result, display record type information,
     child sobjects information and the field information.
 
     Arguments:
@@ -2758,7 +2757,7 @@ def getUniqueElementValueFromXmlString(xmlString, elementName):
     """
     Extracts an element value from an XML string.
     
-    For example, invoking 
+    For example, invoking
     getUniqueElementValueFromXmlString('<?xml version="1.0" encoding="UTF-8"?><foo>bar</foo>', 'foo')
     should return the value 'bar'.
     """
@@ -2806,7 +2805,7 @@ def get_path_attr(path_or_file):
     path, src = os.path.split(path)
     path, project_name = os.path.split(path)
 
-    # Assume the project name has time suffix, 
+    # Assume the project name has time suffix,
     settings = context.get_settings()
     if settings["keep_project_name_time_suffix"]:
         project_name = project_name[:-9]
@@ -2847,7 +2846,7 @@ def get_metadata_folder(file_name):
         if file name is "/pro-exercise-20130625/src/classes/AccountChartController.cls",
         the metadata_folder is "classes"
 
-    Returns: 
+    Returns:
 
     * metadata_folder -- the metadata folder
     """
@@ -2876,7 +2875,7 @@ def get_component_attribute(file_name, switch=True, reload_cache=False):
     * file_name -- Local component full file name, for example:
         /pro-exercise-20130625/src/classes/AccountChartController.cls
 
-    Returns: 
+    Returns:
 
     * (component_attribute, file name) -- for example, component_attribute = {
         "body": "Body",
@@ -2900,7 +2899,7 @@ def get_component_attribute(file_name, switch=True, reload_cache=False):
 
     # Check whether project of current file is active project
     default_project_name = settings["default_project_name"]
-    if switch and default_project_name.lower() not in file_name.lower(): 
+    if switch and default_project_name.lower() not in file_name.lower():
         return None, None
 
     xml_name = settings[metadata_folder]["xmlName"]
@@ -2934,7 +2933,7 @@ def check_enabled(file_name, check_cache=True):
     # Check whether current file is subscribed component
     attributes = get_file_attributes(file_name)
     metadata_folder = attributes["metadata_folder"]
-    if metadata_folder not in settings["all_metadata_folders"]: 
+    if metadata_folder not in settings["all_metadata_folders"]:
         sublime.status_message("Not valid SFDC component")
         return False
 
@@ -2947,7 +2946,7 @@ def check_enabled(file_name, check_cache=True):
     # Check whether active component is in active project
     if check_cache:
         component_attribute, component_name = get_component_attribute(file_name)
-        if not component_attribute: 
+        if not component_attribute:
             sublime.status_message("Not found the attribute of this component")
             return False
     
@@ -3039,9 +3038,9 @@ def add_project_to_workspace(settings):
         folder_path = folder["path"]
 
         # Parse windows path to AS-UNIX
-        if "\\" in folder_path: 
+        if "\\" in folder_path:
             folder_path = folder_path.replace("\\", "/")
-        if "\\" in workspace: 
+        if "\\" in workspace:
             workspace = workspace.replace("\\", "/")
 
         if folder_path == workspace:
@@ -3140,7 +3139,7 @@ def export_role_hierarchy(records):
     rows = []
     for role in sorted(top_roles, key=lambda k : k['Name']):
         rows.append(role["Name"])
-        append_child_roles(rolemap, role["Id"], rows, 1, 
+        append_child_roles(rolemap, role["Id"], rows, 1,
             settings["include_users_in_role_hierarchy"])
 
     outputdir = settings["workspace"]+ "/.export/Role"
@@ -3200,7 +3199,7 @@ def export_profile_settings():
     sobject_fields = {}
     permission_names = []
     for profile in profiles:
-        # Escape profile name, for example, 
+        # Escape profile name, for example,
         # "Custom%3A Sales Profile" changed to "Custom: Sales Profile"
         unquoted_profile = urllib.parse.unquote(unescape(profile, {"&apos;": "'", "&quot;": '"'}))
         Printer.get("log").write("Parsing the profile security settings of "+unquoted_profile)
@@ -3218,7 +3217,7 @@ def export_profile_settings():
             object_permissions = result["objectPermissions"]
 
             # Some profiles just only have one objectPermissions
-            if isinstance(result["objectPermissions"], dict): 
+            if isinstance(result["objectPermissions"], dict):
                 object_permissions = [object_permissions]
 
             for op in object_permissions:
@@ -3291,17 +3290,17 @@ def export_profile_settings():
     #########################################
     # Define object CRUD
     cruds = [
-        "allowRead", "allowCreate", "allowEdit", 
-        "allowDelete", "modifyAllRecords", 
+        "allowRead", "allowCreate", "allowEdit",
+        "allowDelete", "modifyAllRecords",
         "viewAllRecords"
     ]
 
     cruds_translation = {
-        "allowRead": "Read", 
-        "allowCreate": "Create", 
-        "allowEdit": "Edit", 
-        "allowDelete": "Delete", 
-        "modifyAllRecords": "ModifyAll", 
+        "allowRead": "Read",
+        "allowCreate": "Create",
+        "allowEdit": "Edit",
+        "allowDelete": "Delete",
+        "modifyAllRecords": "ModifyAll",
         "viewAllRecords": "ViewAll"
     }
 

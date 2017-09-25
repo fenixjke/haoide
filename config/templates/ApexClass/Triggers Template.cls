@@ -1,62 +1,126 @@
-public class Triggers {
-    /**
-        Enum representing each of before/after CRUD events on Sobjects
-    */
-    public enum Evt {
-        afterdelete, afterinsert, afterundelete,
-        afterupdate, beforedelete, beforeinsert, beforeupdate   
+/**
+ * Class TriggerFactory
+ *
+ * Used to instantiate and execute Trigger Handlers associated with sObjects.
+ */
+public with sharing class TriggerFactory
+{
+  /**
+   * Public static method to create and execute a trigger handler
+   *
+   * Arguments:   Type t - Type of handler to instatiate
+   *
+   * Throws a TriggerException if no handler has been found.
+   */
+  public static void createAndExecuteHandler(Type t)
+  {
+    // Get a handler appropriate to the object being processed
+    ITrigger handler = getHandler(t);
+     
+    // Make sure we have a handler registered, new handlers must be registered in the getHandler method.
+    if (handler == null)
+    {
+      throw new TriggerException('No Trigger Handler found named: ' + t.getName());
     }
-    
-    /**
-        Simplistic handler to implement on any of the event. It doesn't requires or enforces any patter except the
-        method name to be "handle()", a developer is free to use any Trigger context variable or reuse any other
-        apex class here.
-    */
-    public interface Handler {
-        void handle();          
-    } 
-    
-    // Internal mapping of handlers
-    Map<String, List<Handler>> eventHandlerMapping = new Map<String, List<Handler>>();
-    
-    /**
-        Core API to bind handlers with events
-    */
-    public Triggers bind(Evt event, Handler eh) {
-        List<Handler> handlers = eventHandlerMapping.get(event.name());
-        if (handlers == null) {
-            handlers = new List<Handler>();
-            eventHandlerMapping.put(event.name(), handlers);
+     
+    // Execute the handler to fulfil the trigger
+    execute(handler);
+  }
+
+  /**
+   * private static method to control the execution of the handler
+   *
+   * Arguments:   ITrigger handler - A Trigger Handler to execute
+   */
+  private static void execute(ITrigger handler)
+  {
+    // Before Trigger
+    if (Trigger.isBefore)
+    {
+      // Iterate through the records to be deleted passing them to the handler.
+      if (Trigger.isDelete)
+      {
+        for (SObject so : Trigger.old)
+        {
+          handler.beforeDelete(so);
         }
-        handlers.add(eh);
-        return this;
+      }
+      // Iterate through the records to be inserted passing them to the handler.
+      else if (Trigger.isInsert)
+      {
+        for (SObject so : Trigger.new)
+        {
+          handler.beforeInsert(so);
+        }
+      }
+      // Iterate through the records to be updated passing them to the handler.
+      else if (Trigger.isUpdate)
+      {
+        for (SObject so : Trigger.old)
+        {
+          handler.beforeUpdate(so, Trigger.newMap.get(so.Id));
+        }
+      }
+
+      // Call the bulk before to handle any caching of data and enable bulkification
+      handler.bulkBefore();
     }
-    
-    /**
-        Invokes correct handlers as per the context of trigger and available registered handlers
-    */
-    public void manage() {
-        Evt ev = null;
-        if(Trigger.isInsert && Trigger.isBefore){
-            ev = Evt.beforeinsert;
-        } else if(Trigger.isInsert && Trigger.isAfter){
-            ev = Evt.afterinsert;
-        } else if(Trigger.isUpdate && Trigger.isBefore){
-            ev = Evt.beforeupdate;
-        } else if(Trigger.isUpdate && Trigger.isAfter){
-            ev = Evt.afterupdate;
-        } else if(Trigger.isDelete && Trigger.isBefore){
-            ev = Evt.beforedelete;
-        } else if(Trigger.isDelete && Trigger.isAfter){
-            ev = Evt.afterdelete;
-        } else if(Trigger.isundelete){
-            ev = Evt.afterundelete;             
+    else
+    {
+      // Iterate through the records deleted passing them to the handler.
+      if (Trigger.isDelete)
+      {
+        for (SObject so : Trigger.old)
+        {
+          handler.afterDelete(so);
         }
-        List<Handler> handlers = eventHandlerMapping.get(ev.name());
-        if (handlers != null && !handlers.isEmpty()) {
-            for (Handler h : handlers) {
-                h.handle();
-            }
+      }
+      // Iterate through the records inserted passing them to the handler.
+      else if (Trigger.isInsert)
+      {
+        for (SObject so : Trigger.new)
+        {
+          handler.afterInsert(so);
         }
+      }
+      // Iterate through the records updated passing them to the handler.
+      else if (Trigger.isUpdate)
+      {
+        for (SObject so : Trigger.old)
+        {
+          handler.afterUpdate(so, Trigger.newMap.get(so.Id));
+        }
+      }
+      
+      // Call the bulk after to handle any caching of data and enable bulkification
+      handler.bulkAfter();
+
     }
+
+    // Perform any post processing
+    handler.andFinally();
+  }
+
+  /**
+   * private static method to get the named handler.
+   *
+   * Arguments:   Type t - Class of handler to instatiate
+   *
+   * Returns:     ITrigger - A trigger handler if one exists or null.
+   */
+  private static ITrigger getHandler(Type t)
+  {
+      // Instantiate the type
+      Object o = t.newInstance();
+
+      // if its not an instance of ITrigger return null
+      if (!(o instanceOf ITrigger))
+      {
+        return null;
+      }
+
+      return (ITrigger)o;
+  }
+
+  public class TriggerException extends Exception {}
 }
