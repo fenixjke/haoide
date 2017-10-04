@@ -20,7 +20,7 @@ class OpenAuraDocumentReference(sublime_plugin.WindowCommand):
     def is_enabled(self):
         self.settings = context.get_settings()
         metadata = util.get_described_metadata(self.settings)
-        if not metadata: 
+        if not metadata:
             return False
         
         self.namespace = metadata["organizationNamespace"]
@@ -37,7 +37,7 @@ class DeployLightingToServer(sublime_plugin.WindowCommand):
         if switch_project:
             return self.window.run_command("switch_project", {
                 "callback_options": {
-                    "callback_command": "deploy_lighting_to_server", 
+                    "callback_command": "deploy_lighting_to_server",
                     "args": {
                         "switch_project": False,
                         "source_org": self.settings["default_project_name"],
@@ -100,7 +100,7 @@ class PreviewLightingAppInServer(sublime_plugin.WindowCommand):
     def is_enabled(self):
         self.settings = context.get_settings()
         metadata = util.get_described_metadata(self.settings)
-        if not metadata: 
+        if not metadata:
             return False
         
         self.namespace = metadata["organizationNamespace"]
@@ -116,7 +116,7 @@ class PreviewThisAppInServer(sublime_plugin.TextCommand):
         })
 
     def is_enabled(self):
-        if not self.view.file_name(): 
+        if not self.view.file_name():
             return False
 
         attrs = util.get_file_attributes(self.view.file_name())
@@ -137,8 +137,8 @@ class RetrieveLightingFromServer(sublime_plugin.WindowCommand):
         message = "Are you sure you really want to continue refreshing"
         if sublime.ok_cancel_dialog(message, "Confirm?"):
             processor.handle_retrieve_package(
-                self.types, 
-                self.settings["workspace"], 
+                self.types,
+                self.settings["workspace"],
                 ignore_package_xml=True
             )
 
@@ -181,9 +181,9 @@ class DestructLightingFromServer(sublime_plugin.WindowCommand):
         self.settings = context.get_settings()
         for _dir in dirs:
             attributes = util.get_file_attributes(_dir)
-            if attributes["metadata_folder"] != "aura": 
+            if attributes["metadata_folder"] != "aura":
                 return False
-            if not util.check_enabled(_dir, check_cache=False): 
+            if not util.check_enabled(_dir, check_cache=False):
                 return False
 
         return True
@@ -200,7 +200,7 @@ class CreateLightingElement(sublime_plugin.WindowCommand):
         templates = util.load_templates()
         template = templates.get("AuraElement").get(element)
         settings = context.get_settings()
-        tempaltes_path = os.path.join(settings["workspace"], 
+        tempaltes_path = os.path.join(settings["workspace"],
             ".templates", template["directory"])
         with open(tempaltes_path) as fp:
             body = fp.read()
@@ -209,7 +209,7 @@ class CreateLightingElement(sublime_plugin.WindowCommand):
         extension = template["extension"]
         element_name = "%s%s%s" % (
             self.aura_name,
-            element if extension == ".js" else "", 
+            element if extension == ".js" else "",
             extension
         )
 
@@ -268,7 +268,7 @@ class CreateLightingDefinition(sublime_plugin.WindowCommand):
 
     def run(self, _type=""):
         self._type = _type
-        self.window.show_input_panel("Please Input %s Name: " % _type, 
+        self.window.show_input_panel("Please Input %s Name: " % _type,
             "", self.on_input, None, None)
 
     def on_input(self, lighting_name):
@@ -276,7 +276,7 @@ class CreateLightingDefinition(sublime_plugin.WindowCommand):
         if not re.match('^[a-zA-Z]+\\w+$', lighting_name):
             message = 'Invalid format, do you want to try again?'
             if not sublime.ok_cancel_dialog(message): return
-            self.window.show_input_panel("Please Input %s Name: " % self._type, 
+            self.window.show_input_panel("Please Input %s Name: " % self._type,
                 "", self.on_input, None, None)
             return
 
@@ -286,8 +286,9 @@ class CreateLightingDefinition(sublime_plugin.WindowCommand):
 
         # Get template attribute
         templates = util.load_templates()
-        template = templates.get("Aura").get(self._type)        
-        with open(os.path.join(workspace, ".templates", template["directory"])) as fp:
+        template = templates.get("Aura").get(self._type)
+        # with open(os.path.join(workspace, ".templates", template["directory"])) as fp:
+        with open(os.path.join(sublime.packages_path(), "haoide/config/templates", template["directory"])) as fp:
             body = fp.read()
 
         # Build dir for new lighting component
@@ -297,7 +298,7 @@ class CreateLightingDefinition(sublime_plugin.WindowCommand):
         else:
             message = "%s is already exist, do you want to try again?" % lighting_name
             if not sublime.ok_cancel_dialog(message, "Try Again?"): return
-            self.window.show_input_panel("Please Input Lighting Name: ", 
+            self.window.show_input_panel("Please Input Lighting Name: ",
                 "", self.on_input, None, None)
             return
         
